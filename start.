@@ -1,1 +1,71 @@
 $ python httpclient_4_1.py http://example.com
+import sys
+import socket
+
+def fetch_http(url):
+    # URL이 http://로 시작하는지 확인
+    if not url.startswith("http://"):
+        print("Error: Only 'http://' URLs are supported.", file=sys.stderr)
+        sys.exit(1)
+    
+    # URL에서 호스트명과 경로 추출
+    url = url[len("http://"):]  # "http://" 부분 제거
+    if "/" in url:
+        host, path = url.split("/", 1)
+        path = "/" + path
+    else:
+        host, path = url, "/"
+
+    # 호스트에서 포트번호가 포함된 경우 분리
+    if ":" in host:
+        host, port = host.split(":")
+        port = int(port)
+    else:
+        port = 80  # 기본 HTTP 포트
+
+    # 소켓 생성 및 서버 연결
+    try:
+        with socket.create_connection((host, port)) as sock:
+            # HTTP 요청 작성
+            request = f"GET {path} HTTP/1.0\r\nHost: {host}\r\nConnection: close\r\n\r\n"
+            sock.sendall(request.encode())  # 요청 전송
+
+            # 응답 받기
+            response = sock.recv(4096)  # 첫 번째 응답 읽기
+            data = b""
+            while response:
+                data += response
+                response = sock.recv(4096)  # 추가 데이터 읽기
+            
+            # 응답을 문자열로 변환
+            response_text = data.decode(errors="ignore")
+
+            # 응답의 헤더와 바디 분리
+            headers, body = response_text.split("\r\n\r\n", 1)
+
+            # 응답 코드 확인 (예: HTTP/1.1 200 OK)
+            status_line = headers.split("\n")[0]
+            status_code = int(status_line.split(" ")[1])
+
+            if status_code >= 400:
+                print(f"Error: Received HTTP {status_code}", file=sys.stderr)
+                sys.exit(1)
+
+            # Content-Type 확인 (text/html만 출력)
+            if "Content-Type: text/html" in headers:
+                print(body)  # HTML 본문 출력
+            else:
+                print("Error: Content is not text/html", file=sys.stderr)
+                sys.exit(1)
+
+    except Exception as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
+
+# 실행 예시: python httpclient_4_1.py http://example.com
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python httpclient.py <URL>", file=sys.stderr)
+        sys.exit(1)
+    
+    fetch_http(sys.argv[1])
