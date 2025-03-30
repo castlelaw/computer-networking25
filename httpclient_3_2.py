@@ -12,4 +12,7 @@ def send_request(url):
   url = url[len("http://"):]
   parts = url.split("/", 1)
   host = parts[0]
-  pat
+  path = "/" + parts[1] if len(parts) > 1 else "/"
+  
+  
+  port = 80
