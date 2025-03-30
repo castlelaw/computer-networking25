@@ -26,4 +26,21 @@ def send_request(url):
   else:
     host = host_port
   return host, port, path
-    
+
+
+def send_http_request(host, port, path):
+   try: 
+          client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+          client_socket.connect((host, port))
+
+
+          request = f"GET {path} HTTP/1.0\r\nHost: {host}\r\nConnection: close\r\n\r\n"
+          client_socket.sendall(request.encode())
+
+          response = b""
+          while True:
+            data = client_socket.recv(1024)
+            if not data:
+                break
+            response += data
+
