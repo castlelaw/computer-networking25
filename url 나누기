@@ -1,12 +1,9 @@
 import sys
 
-de_port=80
-
 def divide_url(url):
-    if url.startswith("http://"):
-    
+    if url[:7] == "http://":
         url = url[7:]
-        port = de_port
+        port = 80
     
         if '/' in url:
             host_port, path = url.split('/',1)
