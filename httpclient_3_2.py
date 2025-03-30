@@ -16,3 +16,6 @@ def send_request(url):
   
   
   port = 80
+  if ':' in host:
+    host, port = host.split(":")
+    port = int(port)
