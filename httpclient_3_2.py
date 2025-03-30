@@ -11,19 +11,19 @@ def send_request(url):
 
   url = url[len("http://"):]
   parts = url.split("/", 1)
-  host = parts[0]
+  host_port = parts[0]
   path = "/" + parts[1] if len(parts) > 1 else "/"
   
   
   port = 80
   if ':' in host:
-    host, port = host.split(":")
+    host, port = host_port.split(":")
     if port.isdigit():
       port = int(port)
     else:
-      sys.stderr.write("Error: invalid port")
+      sys.stderr.write("Error: invalid port\n")
       sys.exit(1)
   else:
-    return host
+    host = host_port
   return host, port, path
     
