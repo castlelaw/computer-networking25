@@ -30,19 +30,19 @@ def send_request(url):
 
 def send_http_request(host, port, path):
    try: 
-          client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-          client_socket.connect((host, port))
+        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client_socket.connect((host, port))
 
 
-          request = f"GET {path} HTTP/1.0\r\nHost: {host}\r\nConnection: close\r\n\r\n"
-          client_socket.sendall(request.encode())
+        request = f"GET {path} HTTP/1.0\r\nHost: {host}\r\nConnection: close\r\n\r\n"
+        client_socket.sendall(request.encode())
 
-          response = b""
-          while True:
-            data = client_socket.recv(1024)
-            if not data:
-                break
-            response += data
+        response = b""
+        while True:
+          data = client_socket.recv(1024)
+          if not data:
+              break
+          response += data
             
         response_str = response.decode(errors='ignore')
         headers, body = response_str.split("\r\n\r\n", 1)
