@@ -44,3 +44,11 @@ def send_http_request(host, port, path):
                 break
             response += data
 
+def url_headers(header_str):
+    headers = {}
+    line = header_str.split("\r\n")
+    for dic in line[1:]:
+        if ':' in dic:
+            key, value = dic.split(':', 1)
+            headers[key.strip().lower()] = value.strip()
+    return lines[0], headers
