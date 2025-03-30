@@ -1,0 +1,33 @@
+import http.client
+import sys
+
+def follow_redirects(url, max_redirects=443):
+    redirects = 0
+
+    while redirects < max_redirects:
+        conn = http.client.HTTPConnection(url, timeout=5)
+        conn.request("GET", "/")
+        response = conn.getresponse()
+
+        status = response.status
+        location = response.getheader("Location")
+
+        print(f"Status: {status}, Location: {location}")
+
+        if status == 200:
+            print("Success, 200 OK")
+            exit(0)
+
+        if location and location.startswith("https://"):
+            print("Error")
+            exit(1)
+
+        if status in (301, 302) and location:
+            print(f"Status: {status} 리디렉션 감지: {location}")
+            url = location.replace("http://", "").replace("https://", "")
+            redirects += 1
+        else:
+            break
+
+    print("Error")
+    exit(1)
