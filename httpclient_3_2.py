@@ -43,6 +43,23 @@ def send_http_request(host, port, path):
             if not data:
                 break
             response += data
+            
+        response_str = response.decode(errors='ignore')
+        headers, body = response_str.split("\r\n\r\n", 1)
+        status_line = headers.split("\r\n")[0]
+        status_code = int(status_line.split()[1])
+        
+        print(f"Status: {status_code}")
+        
+        if status_code == 200:
+            print("Success, 200 OK")
+            sys.exit(0)
+        
+        if status_code >= 400:
+            print("Error: Received HTTP", status_code)
+            print(body)
+            sys.exit(1)
+          
 
 def url_headers(header_str):
     headers = {}
