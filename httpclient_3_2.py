@@ -18,4 +18,12 @@ def send_request(url):
   port = 80
   if ':' in host:
     host, port = host.split(":")
-    port = int(port)
+    if port.isdigit():
+      port = int(port)
+    else:
+      sys.stderr.write("Error: invalid port")
+      sys.exit(1)
+  else:
+    return host
+  return host, port, path
+    
