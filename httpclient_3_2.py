@@ -68,4 +68,4 @@ def http_headers(header_str):
         if ':' in dic:
             key, value = dic.split(':', 1)
             headers[key.strip().lower()] = value.strip()
-    return line[0], headers
+    return headers
