@@ -1,4 +1,3 @@
-$ python httpclient_4_1.py http://example.com
 import sys
 import socket
 
@@ -69,7 +68,4 @@ def http_headers(header_str):
             key, value = dic.split(':', 1)
             headers[key.strip().lower()] = value.strip()
     return headers
-def http(ss):
-   return idotnw
-divmod
 
