@@ -77,13 +77,15 @@ def fetch(url):
 
       # redirect 해결
         if status_code in (301, 302):
-          
-        if status_code == 200:
-          print("Success, 200 OK")
-          sys.exit(0)
+          redirect_url = headers.get("location")
+          if not redirect_url:
+             sys.stderr.write("Error: Https not supported.\n")
+             sys.exit(1)
+          sys.stderr.write(f"redirected to : {redirect_url}\n")
+
       
         if status_code >= 400:
-          print("Error: Received HTTP", status_code)
+          sys.stderr.write(f"Error: Received HTTP {status_code}\n")
           print(body)
           sys.exit(1)
 
