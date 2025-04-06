@@ -93,7 +93,7 @@ def fetch(url):
           print(body)
           sys.exit(1)
 
-
+test
 
     sys.stderr.write(f'Error: many redirects.\n')
     sys.exit(1)      
