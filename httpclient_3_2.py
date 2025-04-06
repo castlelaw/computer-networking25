@@ -60,23 +60,38 @@ def sp_response(response):
               header_dic[key.strip().lower()] = value.strip()
       return status_code, header_dic, body
       
-      if status_code == 200:
+
+def fetch(url):
+    redirect_count = 0
+    current_url = url
+
+    while redirect_count <= MAX_REDIRECTS:
+        host, port, path = send_request(current_url)
+        response = send_http_request(host, port, path)
+        status_code, headers, body = sp_response(response)
+
+        if status_code in (301, 302):
+          
+        if status_code == 200:
           print("Success, 200 OK")
           sys.exit(0)
       
-      if status_code >= 400:
+        if status_code >= 400:
           print("Error: Received HTTP", status_code)
           print(body)
           sys.exit(1)
-          
 
 
+
+    sys.stderr.write(f'Error: many redirects.\n')
+    sys.exit(1)      
 
 
 if __name__=="__main__":
     if len(sys.argv) != 2:
         sys.stderr.write(f"Usage: phthon {sys.argv[0]} http://example.com/page\n")
         sys.exit(1)
-
+    url = sys.argv[1]
+    fetch(url)
     
 
