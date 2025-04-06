@@ -73,7 +73,11 @@ def fetch(url):
         host, port, path = send_request(current_url)
         response = send_http_request(host, port, path)
         status_code, headers, body = sp_response(response)
-        
+
+       if current_url.startswith("https://"):
+         sys.stderr.write("Error: https is not supported.\n")
+         sys.exit(1)
+
 
       # redirect 해결
         if status_code in (301, 302):
