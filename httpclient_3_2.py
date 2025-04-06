@@ -70,14 +70,14 @@ def fetch(url):
     current_url = url
 
     while redirect_count <= MAX_REDIRECTS:
+        if current_url.startswith("https://"):
+          sys.stderr.write("Error: https is not supported.\n")
+          sys.exit(1)
+      
+      
         host, port, path = send_request(current_url)
         response = send_http_request(host, port, path)
         status_code, headers, body = sp_response(response)
-
-       if current_url.startswith("https://"):
-         sys.stderr.write("Error: https is not supported.\n")
-         sys.exit(1)
-
 
       # redirect 해결
         if status_code in (301, 302):
@@ -101,7 +101,7 @@ def fetch(url):
 # url argv 변수 1에 저장 후 fetch 함수 부르기
 if __name__=="__main__":
     if len(sys.argv) != 2:
-        sys.stderr.write(f"Usage: phthon {sys.argv[0]} http://example.com/page\n")
+        sys.stderr.write(f"Usage: python {sys.argv[0]} http://example.com/page\n")
         sys.exit(1)
     url = sys.argv[1]
     fetch(url)
