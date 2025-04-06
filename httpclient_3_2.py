@@ -87,7 +87,7 @@ def fetch(url):
           if not redirect_url:
              sys.stderr.write("Error: Https is not supported.\n")
              sys.exit(1)
-          if location.startswith("https://"):
+          if redirect_url.startswith("https://"):
              sys.stderr.write("Error: HTTPS is not supported\n")
              sys.exit(1)
           sys.stderr.write(f"redirected to : {redirect_url}\n")
