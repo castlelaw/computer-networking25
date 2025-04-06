@@ -18,7 +18,7 @@ def send_request(url):
   
   # 기본 port 80이고 명시여부 처리
   port = 80
-  if ':' in host:
+  if ':' in host_port:
     host, port = host_port.split(":")
     if port.isdigit():
       port = int(port)
