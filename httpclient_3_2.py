@@ -79,13 +79,21 @@ def fetch(url):
         response = send_http_request(host, port, path)
         status_code, headers, body = sp_response(response)
 
+
+
       # redirect 해결
         if status_code in (301, 302):
           redirect_url = headers.get("location")
           if not redirect_url:
-             sys.stderr.write("Error: Https not supported.\n")
+             sys.stderr.write("Error: Https is not supported.\n")
+             sys.exit(1)
+          if location.startswith("https://"):
+             sys.stderr.write("Error: HTTPS is not supported\n")
              sys.exit(1)
           sys.stderr.write(f"redirected to : {redirect_url}\n")
+          current_url=redirect_url
+          redirect_count+=1
+          continue
 
       
         if status_code >= 400:
@@ -93,6 +101,14 @@ def fetch(url):
           print(body)
           sys.exit(1)
 
+      # 컨텐트 타입
+        content_type = headers.get("content-type", "").lower()
+        if not content_type.startswith("text/html"):
+            sys.stderr.write("Error: Content-Type is not text/html\n")
+            sys.exit(1)
+
+        print(body)
+        sys.exit(0)
 
     sys.stderr.write(f'Error: many redirects.\n')
     sys.exit(1)      
