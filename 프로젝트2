@@ -1,0 +1,5 @@
+import sys
+import socket
+
+
+MAX_REDIRECTS = 5
