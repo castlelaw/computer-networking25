@@ -4,17 +4,21 @@ import socket
 #리다이렉트 최대 5번
 MAX_REDIRECTS = 5
 
+
+#리다이렉트 횟수 세기
 class SimpleHttpClient:
     def __init__(self, url):
         self.original_url = url
         self.redirect_count = 0
 
+#url 형식확인
     def validate_url(self, url):
         if not url.startswith("http://"):
             sys.stderr.write("Error: URL must start with 'http://'\n")
             sys.exit(1)
         return url[len("http://"):]
 
+#url 파싱
     def parse_url(self, url):
         url = self.validate_url(url)
         parts = url.split("/", 1)
