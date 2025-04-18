@@ -11,14 +11,14 @@ class SimpleHttpClient:
         self.original_url = url
         self.redirect_count = 0
 
-#url 형식확인
+#url 형식확인 및 http:// 제거
     def validate_url(self, url):
         if not url.startswith("http://"):
             sys.stderr.write("Error: URL must start with 'http://'\n")
             sys.exit(1)
         return url[len("http://"):]
 
-#url 파싱
+#URL을 host, port, path로 파싱
     def parse_url(self, url):
         url = self.validate_url(url)
         parts = url.split("/", 1)
@@ -36,3 +36,20 @@ class SimpleHttpClient:
             port = 80
 
         return host, port, path
+
+#HTTP 요청 전송 및 응답 수신
+    def send_http_request(self, host, port, path):
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
+                client_socket.connect((host, port))
+                request = f"GET {path} HTTP/1.0\r\nHost: {host}\r\nConnection: close\r\n\r\n"
+                client_socket.sendall(request.encode())
+
+                response = b""
+                while True:
+                    data = client_socket.recv(1024)
+                    if not data:
+                        break
+                    response += data
+
+            return response
