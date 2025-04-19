@@ -12,6 +12,11 @@ if not port_str.isdigit():
     print("error: 포트번호는 숫자")
     sys.exit(1)
 
+port = int(port_str)
+
+if port < 1024:
+    print("error: 포트번호 > 1024.")
+    sys.exit(1)
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.bind(("0.0.0.0", port))
@@ -19,11 +24,6 @@ server_socket.listen(1)
 print("서버 시작")
 print(f"→ 연결 대기: {port}")
 
-port = int(port_str)
-
-if port < 1024:
-    print("error: 포트번호 > 1024.")
-    sys.exit(1)
 
 # 파일 존재 확인하기
 def file_exist(filename):
