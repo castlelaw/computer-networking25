@@ -1,5 +1,22 @@
 import sys
 import socket
+import os
+
+if len(sys.argv) != 2:
+    print("python httpserver_4_1.py [포트]")
+    sys.exit(1)
+
+port_str = sys.argv[1]
+
+if not port_str.isdigit():
+    print("error: 포트번호는 숫자")
+    sys.exit(1)
+
+port = int(port_str)
+
+if port < 1024:
+    print("error: 포트번호 > 1024.")
+    sys.exit(1)
 
 # 파일 존재 확인하기
 def file_exist(filename):
