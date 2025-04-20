@@ -2,7 +2,7 @@ import sys
 import socket
 
 if len(sys.argv) != 2:
-    print("python httpserver_4_1.py [포트]")
+    print("python httpserver_3_2.py [포트]")
     sys.exit(1)
 
 port_str = sys.argv[1]
