@@ -39,3 +39,33 @@ HTTP_200 = "HTTP/1.0 200 OK\r\n"
 HTTP_403 = "HTTP/1.0 403 Forbidden\r\n\r\n<html><body><h1>403 Forbidden</h1></body></html>"
 HTTP_404 = "HTTP/1.0 404 Not Found\r\n\r\n<html><body><h1>404 Not Found</h1></body></html>"
 CONTENT_TYPE = "Content-Type: text/html\r\n"
+
+#HTTP 서버 클라이언트의 요청
+while True:
+    conn, addr = server_socket.accept()
+    print(f"→ 연결됨: {addr}")
+
+    request = conn.recv(1024).decode("utf-8")
+    print(f"받은 요청:\n{request}")
+
+    if not request:
+        conn.close()
+        continue
+
+    lines = request.splitlines()
+    request_line = lines[0]
+    parts = request_line.split()
+
+    #HTTP 요청 형식 확인
+    if len(parts) != 3:
+        conn.sendall(HTTP_403.encode())
+        conn.close()
+        continue
+
+    method, path, _ = parts
+    filename = path.lstrip("/")  
+
+    if method != "GET":
+        conn.sendall(HTTP_403.encode())
+        conn.close()
+        continue
