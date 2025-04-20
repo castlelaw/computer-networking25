@@ -71,7 +71,7 @@ while True:
             conn.close()
             continue
 
-        if not (filename.endwhith(".html") or filename.endswith(".htm")):
+        if not (filename.endswith(".html") or filename.endswith(".htm")):
             conn.sendall(HTTP_403.encode())
             conn.close()
             continue
