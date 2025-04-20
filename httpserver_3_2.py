@@ -1,6 +1,5 @@
 import sys
 import socket
-import os
 
 if len(sys.argv) != 2:
     print("python httpserver_4_1.py [포트]")
@@ -15,7 +14,7 @@ if not port_str.isdigit():
 port = int(port_str)
 
 if port < 1024:
-    print("error: 포트번호 > 1024.")
+    print("error: 포트번호 > 1024")
     sys.exit(1)
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -44,28 +43,41 @@ CONTENT_TYPE = "Content-Type: text/html\r\n"
 while True:
     conn, addr = server_socket.accept()
     print(f"→ 연결됨: {addr}")
+    
+    try:
+        request = conn.recv(1024).decode("utf-8")
+        print(f"받은 요청:\n{request}")
 
-    request = conn.recv(1024).decode("utf-8")
-    print(f"받은 요청:\n{request}")
+        if not request:
+            conn.close()
+            continue
 
-    if not request:
-        conn.close()
-        continue
+        lines = request.splitlines()
+        request_line = lines[0]
+        parts = request_line.split()
 
-    lines = request.splitlines()
-    request_line = lines[0]
-    parts = request_line.split()
+        #HTTP 요청 형식 확인
+        if len(parts) != 3:
+            conn.sendall(HTTP_403.encode())
+            conn.close()
+            continue
 
-    #HTTP 요청 형식 확인
-    if len(parts) != 3:
-        conn.sendall(HTTP_403.encode())
-        conn.close()
-        continue
+        method, path, _ = parts
+        path_parts = path.split("/")
+        filename = path_parts[-1] or "index.html"  
 
-    method, path, _ = parts
-    filename = path.lstrip("/")  
+        if method != "GET":
+            conn.sendall(HTTP_403.encode())
+            conn.close()
+            continue
 
-    if method != "GET":
-        conn.sendall(HTTP_403.encode())
-        conn.close()
-        continue
+        if not (filename.endwhith(".html") or filename.endswith(".htm")):
+            conn.sendall(HTTP_403.encode())
+            conn.close()
+            continue
+
+        if not file_exist(filename):
+            conn.sendall(HTTP_404.encode())
+            conn.close()
+            continue
+        
