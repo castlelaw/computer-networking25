@@ -89,4 +89,4 @@ while True:
         print("서버 오류:", e)
         conn.sendall(b"HTTP/1.0 500 Internal Server Error\r\n\r\n<h1>500 Internal Server Error</h1>")
 
-    conn.close
+    conn.close()
