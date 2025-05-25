@@ -43,3 +43,9 @@ def handle_request(data):
         if method != 'GET':
             return "HTTP/1.0 405 Method Not Allowed\r\n\r\n허용되지 않는 메소드입니다.".encode()
 
+        if path == '/':
+            path = '/index.html'
+
+
+
+
