@@ -9,7 +9,7 @@ RECV_BUFFER = 4096   # 한번에 읽을 최대 바이트 수
 
 #포트 입력 확인
 if len(sys.argv) != 2:
-    print(f"사용법: python3 {sys.argv[0]} <포트번호>", file=sys.stderr)
+    print(f"사용법: python {sys.argv[0]} <포트번호>", file=sys.stderr)
     sys.exit(1)
 
 #포트 번호를 정수로 변환, 잘못 입력하면 종료
