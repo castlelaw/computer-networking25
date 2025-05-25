@@ -29,15 +29,12 @@ server_socket.setblocking(False)
 print(f"{PORT}번 포트에서 연결 대기 중...")
 
 inputs = [server_socket]
-outputs = []
-message_queues = {}
-client_states = {}
+client_buffers = {}
 
 #요청 처리 함수
 def handle_request(data):
     try:
-        lines = data.split('\r\n')
-        request_line = lines[0]
+        request_line = data.split('\r\n')[0]
         method, path, _ = request_line.split()
 
         if method != 'GET':
@@ -45,6 +42,24 @@ def handle_request(data):
 
         if path == '/':
             path = '/index.html'
+        filename = '.' + path
+        try:
+            with open(filename, 'rb') as f:
+                body = f.read()
+        except FileNotFoundError:
+            return "HTTP/1.1 404 Not Found\r\n\r\n요청한 파일이 없습니다.".encode()
+        
+        header = (
+            "HTTP/1.1 200 OK\r\n"
+            f"Content-Length: {len(body)}\r\n"
+            "Content-Type: text/html\r\n"
+            "Connection: close\r\n"
+            "\r\n"
+        ).encode()
+        return header + body
+    except Exception:
+        return "HTTP/1.1 400 Bad Request\r\n\r\n잘못된 요청입니다.".encode()
+    
 
 
 
