@@ -62,15 +62,44 @@ def handle_request(data):
         return header + body
     except Exception:
         return "HTTP/1.1 400 Bad Request\r\n\r\n잘못된 요청입니다.".encode() # 요청 파싱 실패시 400반환
+
 while True:
-    readable, _, _ = select.select(inputs, [], [] ) # 읽기 가능한 소켓 대기
+    readable, _, _ = select.select(inputs, [], []) # 읽기 가능한 소켓 대기
 
     for sock in readable:
-        if sock is server_socket: # 새 클라이언트 연결 수락
+        if sock is server_socket:
+            # 새로운 연결 수락
             client_sock, addr = server_socket.accept()
             print(f"연결됨: {addr}")
-    
+            client_sock.setblocking(False)
+            inputs.append(client_sock)
+            client_buffers[client_sock] = b''  # 버퍼 초기화
+        else:
+            try:
+                data = sock.recv(RECV_BUFFER)
+            except ConnectionResetError:
+                data = b''  # 연결이 비정상 종료됨
 
-
+            if data:
+                client_buffers[sock] += data
+                # 요청 전체 수신 여부 확인
+                if b'\r\n\r\n' in client_buffers[sock]:
+                    request_data = client_buffers[sock].decode(errors='ignore')
+                    response = handle_request(request_data)
+                    try:
+                        sock.sendall(response)
+                    except BrokenPipeError:
+                        pass
+                    sock.close()
+                    inputs.remove(sock)
+                    del client_buffers[sock]
+            else:
+                # 클라이언트가 연결을 끊음
+                print("연결 종료됨")
+                sock.close()
+                if sock in inputs:
+                    inputs.remove(sock)
+                if sock in client_buffers:
+                    del client_buffers[sock]
 
 
