@@ -42,10 +42,12 @@ def handle_request(data):
 
         if path == '/':
             path = '/index.html'
+        
         filename = '.' + path
         try:
             with open(filename, 'rb') as f:
                 body = f.read()
+        
         except FileNotFoundError:
             return "HTTP/1.1 404 Not Found\r\n\r\n요청한 파일이 없습니다.".encode()
         
@@ -59,6 +61,13 @@ def handle_request(data):
         return header + body
     except Exception:
         return "HTTP/1.1 400 Bad Request\r\n\r\n잘못된 요청입니다.".encode()
+while True:
+    readable, _, _ = select.select(inputs, [], [] )
+
+    for sock in readable:
+        if sock is server_socket:
+            client_sock, addr = server_socket.accept()
+            print(f"연결됨: {addr}")
     
 
 
