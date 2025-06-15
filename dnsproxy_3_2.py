@@ -84,7 +84,7 @@ class DNSProxy: # DNS 프록시 서버 클래스 정의
     
     
     
-    if __name__ == '__main__':
+if __name__ == '__main__':
     # 실행 시, 본인 서버의 실제 공인 IP를 넣어주세요
         if len(sys.argv) != 3:
             print(f"사용법: python {sys.argv[0]} <조작할_공인_IP> <수신 포트>")
