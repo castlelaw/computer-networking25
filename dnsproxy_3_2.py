@@ -2,7 +2,7 @@ import sys
 import socket
 
 class DNSProxy: # DNS 프록시 서버 클래스 정의
-    def __init__(self, listen_ip='0.0.0.0', listen_port=5353, upstream_dns='8.8.8.8', upstream_port=53, fake_ip='YOUR_PUBLIC_IP_HERE'):
+    def __init__(self, listen_ip='0.0.0.0', listen_port=5353, upstream_dns='152.99.1.10', upstream_port=53, fake_ip='YOUR_PUBLIC_IP_HERE'):
         self.listen_ip = listen_ip                # DNS 요청을 로컬에서 수신할 IP
         self.listen_port = listen_port            # DNS 요청을 로컬에서 수신할 포트
         self.upstream_dns = upstream_dns          # 실제 DNS 서버주소 (구글 DNS)
