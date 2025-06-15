@@ -10,8 +10,8 @@ class DNSProxy:
         self.fake_ip = fake_ip                    # 조작된 응답에 사용할 IP
 
     def start(self):
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # UDP 소켓 생성
-        sock.bind((self.listen_ip, self.listen_port))             # 로컬 IP와 포트에 바인딩
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)     # UDP 소켓 생성
+        sock.bind((self.listen_ip, self.listen_port))               # 로컬 IP와 포트에 바인딩
         print(f"[*] DNS 프록시 실행 중: {self.listen_ip}:{self.listen_port}")
 
         while True:
