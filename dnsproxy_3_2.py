@@ -19,6 +19,10 @@ class DNSProxy:
             print(f"[>] 클라이언트 {addr}로부터 DNS 요청 수신")
             response = self.forward_to_upstream(data)  # 업스트림 DNS에 요청 전달
 
+            if not response:
+                print("[!] 업스트림 DNS 응답 없고 무시됨")
+                continue
+
             if self.is_nxdomain(response):  # 응답이 NXDOMAIN인지 확인
                 print("[!] NXDOMAIN 발견 - 조작된 A 레코드로 응답합니다")
                 response = self.build_fake_response(data)  # 조작된 응답 생성
@@ -29,8 +33,8 @@ class DNSProxy:
         # 업스트림 DNS 서버로 요청 전달
         upstream_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         upstream_sock.settimeout(2)
-        upstream_sock.sendto(query, (self.upstream_dns, self.upstream_port))
         try:
+            upstream_sock.sendto(query, (self.upstream_dns, self.upstream_port))
             response, _ = upstream_sock.recvfrom(512)
             return response
         except socket.timeout:
@@ -39,12 +43,12 @@ class DNSProxy:
 
 
     def is_nxdomain(self, response):
-    if not response or len(response) < 4:
-        return False
+        if not response or len(response) < 4:
+            return False
 
     # 응답 메시지의 4번째 바이트에서 하위 4비트만 추출 → RCODE 값
-    rcode = response[3] & 0x0F
-    return rcode == 3  # 3 = NXDOMAIN (존재하지 않는 도메인)
+        rcode = response[3] & 0x0F
+        return rcode == 3  # 3 = NXDOMAIN (존재하지 않는 도메인)
         
     def build_fake_response(self, query):
         # [1] 응답 헤더 만들기
@@ -78,5 +82,11 @@ class DNSProxy:
     
     if __name__ == '__main__':
     # 실행 시, 본인 서버의 실제 공인 IP를 넣어주세요
-        proxy = DNSProxy(fake_ip='YOUR.PUBLIC.IP.HERE')
+        if len(sys.argv) != 3:
+            print(f"사용법: python {sys.argv[0]} <조작할_공인_IP> <수신 포트>")
+            sys.exit(1)
+        fake_ip = sys.argv[1]
+        listen_port = int(sys.argv[2])
+
+        proxy = DNSProxy(fake_ip=fake_ip, listen_port=listen_port)
         proxy.start()
