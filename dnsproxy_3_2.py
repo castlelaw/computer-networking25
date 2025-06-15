@@ -36,3 +36,47 @@ class DNSProxy:
         except socket.timeout:
             print("[!] 업스트림 DNS 타임아웃")
             return b''
+
+
+    def is_nxdomain(self, response):
+    if not response or len(response) < 4:
+        return False
+
+    # 응답 메시지의 4번째 바이트에서 하위 4비트만 추출 → RCODE 값
+    rcode = response[3] & 0x0F
+    return rcode == 3  # 3 = NXDOMAIN (존재하지 않는 도메인)
+        
+    def build_fake_response(self, query):
+        # [1] 응답 헤더 만들기
+        transaction_id = query[:2]            # 요청과 같은 ID로 응답
+        flags = b'\x81\x80'                   # 응답이고, 정상 상태 (QR=1, RCODE=0)
+        question_count = b'\x00\x01'          # 질문 1개
+        answer_count = b'\x00\x01'            # 응답 1개
+        authority_count = b'\x00\x00'
+        additional_count = b'\x00\x00'
+        
+        dns_header = transaction_id + flags + question_count + answer_count + authority_count + additional_count
+        
+        # [2] 질문 영역 그대로 복사 (도메인 이름, 타입, 클래스)
+        question_part = query[12:]  # 질문 부분은 12바이트 이후부터 끝까지
+
+        # [3] A 레코드(IPv4 주소) 응답 만들기
+        name_pointer = b'\xC0\x0C'             # 0x0C 위치의 이름을 참조하겠다는 뜻 (압축)
+        type_A = b'\x00\x01'                   # A 레코드
+        class_IN = b'\x00\x01'                 # 인터넷 클래스
+        ttl = self.to_bytes(60, 4)             # TTL 60초 (4바이트)
+        rdlength = b'\x00\x04'                 # 응답 데이터 길이 = 4바이트
+        ip_address_bytes = socket.inet_aton(self.fake_ip)  # '1.2.3.4' → b'\x01\x02\x03\x04'
+
+        answer_part = name_pointer + type_A + class_IN + ttl + rdlength + ip_address_bytes
+
+        # [4] 최종 응답 = 헤더 + 질문 + 답변
+        response = dns_header + question_part + answer_part
+        return response
+    
+    
+    
+    if __name__ == '__main__':
+    # 실행 시, 본인 서버의 실제 공인 IP를 넣어주세요
+        proxy = DNSProxy(fake_ip='YOUR.PUBLIC.IP.HERE')
+        proxy.start()
