@@ -36,6 +36,7 @@ class DNSProxy: # DNS 프록시 서버 클래스 정의
         try:
             upstream_sock.sendto(query, (self.upstream_dns, self.upstream_port)) # DNS 질의 전송
             response, _ = upstream_sock.recvfrom(512) # 응답 수신
+            print(f"[<] 업스트림으로부터 응답 수신: {len(response)}바이트")
             return response
         except socket.timeout:
             print("[!] 업스트림 DNS 타임아웃")#타임아웃 발생시 출력
